@@ -6,34 +6,16 @@ import java.util.Comparator;
 import java.util.List;
 
 public class Game {
-
-    private int[] queens;
-    private int numQueens;
-
-    public Game(int numQueens){
-        queens = new int[numQueens];
-        this.numQueens = numQueens;
-    }
-
-    // Generate state that all queens have row # 0
-    public static int[] generateAllOneState(int n) {
-
-        return new int[n];
-    }
-
-    // Randomizes state
-    public static int[] randomizeState(int[] r) {
-
-        for (int i = 0; i < r.length; i++)
-            r[i] = (int) (Math.random() * r.length);
-
-        return r;
-    }
-
+    
     // generates random initial state
     public static int[] generateRandomState(int n) {
 
-        return randomizeState(generateAllOneState(n));
+        int[] newState = new int[n];
+
+        for (int i = 0; i < newState.length; i++)
+            newState[i] = (int) (Math.random() * newState.length);
+
+        return newState;
     }
 
     // Returns heuristic cost
@@ -51,7 +33,7 @@ public class Game {
 
     public static void main(String[] args) {
         SimulatedAnnealing s = new SimulatedAnnealing();
-        s.solve(4,100000,9900,0.5);
+        s.solve(21,100000,9900,0.5);
     }
 
 }
@@ -121,6 +103,10 @@ class SimulatedAnnealing {
 
 
     }
+
+}
+
+class GeneticAlgorithm{
 
 }
 
