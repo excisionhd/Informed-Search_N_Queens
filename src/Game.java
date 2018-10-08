@@ -37,7 +37,8 @@ public class Game {
         int[] test = {16,12,8,18,2,7,1,4,20,10,17,14,3,13,19,5,15,0,6,11,9};
 
         GeneticAlgorithm g = new GeneticAlgorithm();
-        g.solve(21,100,0.1,100, 3);
+        int[] answer = g.solve(21,1000,0.1,10000);
+        GeneticAlgorithm.printArray(answer);
         //System.out.println(computeCost(test));
     }
 
@@ -134,6 +135,18 @@ class GeneticAlgorithm{
             System.out.print(array[i] + " ");
         }
         System.out.println();
+
+        for (int i = 0; i<array.length;i++){
+            for (int j = 0; j<array.length;j++){
+                if (array[i] == j){
+                    System.out.print(" Q ");
+                }
+                else{
+                    System.out.print(" - ");
+                }
+            }
+            System.out.println();
+        }
     }
 
     public static int computeFitness(int[] array){
@@ -173,54 +186,85 @@ class GeneticAlgorithm{
             sortedPopulation.add(curr);
         }
 
-
-        for (int i = 0; i<sortedPopulation.size();i++){
-            //printArray(sortedPopulation.get(i));
-            //System.out.println(computeFitness(sortedPopulation.get(i)));
-        }
-
         return sortedPopulation;
 
 
     }
 
-    public static int[] solve(int boardSize, int populationSize, double mutationChance, int numGenerations, int kWay){
-        ArrayList<int[]> population = generatePopulation(boardSize, populationSize);
-        ArrayList<int[]> newPopulation = new ArrayList<>();
-        //ArrayList<int[]> sorted = getSortedPopulation(population);
-        int bestFit = (boardSize * (boardSize -1))/2;
+    public static int[] solve(int boardSize, int populationSize, double mutationChance, int numGenerations){
 
-        for (int i = 0;i <population.size();i++){
-            if (computeFitness(population.get(i))== bestFit){
-                return population.get(i);
-            }
+        ArrayList<int[]> population = generatePopulation(boardSize, populationSize);
+        ArrayList<int[]> sorted = getSortedPopulation(population);
+        int bestFit = (boardSize * (boardSize -1))/2;
+        if (computeFitness(sorted.get(0))== bestFit){
+            return sorted.get(0);
         }
 
         for (int i = 0; i<numGenerations;i++){
 
-            newPopulation.clear();
-            for (int pop = 0; pop<populationSize;pop++){
-                ArrayList<int[]> selectedParents = new ArrayList<>();
+            double generationFitnessTotal = 0;
 
-                //select 3 random from the population
-                for (int j = 0; j<kWay;j++){
-                    int randomChild = (int) (Math.random() * populationSize);
-                    selectedParents.add(population.get(randomChild));
+            ArrayList<int[]> matingPool = new ArrayList<>();
+
+            for(int g = 0; g<population.size();g++){
+                generationFitnessTotal += computeFitness(population.get(g));
+            }
+            //System.out.println(generationFitnessTotal);
+
+            for (int count = 0; count < population.size();count++){
+                double freq = computeFitness(population.get(count))/generationFitnessTotal;
+
+                double n = Math.floor(freq*10000);
+
+
+                for(int j = 0; j<n;j++){
+                    matingPool.add(population.get(count));
                 }
+            }
 
-                //sort the parents and get top 2 fitness
-                ArrayList<int[]> sortedParents = getSortedPopulation(selectedParents);
-                int[] parent1, parent2;
-                parent1 = sortedParents.get(0);
-                parent2 = sortedParents.get(1);
+
+            ArrayList<int[]> newPopulation = new ArrayList<>();
+
+            for (int pop = 0; pop<populationSize;pop++){
+                int chooseRandom1 = (int) (Math.random() * matingPool.size());
+                int chooseRandom2 = (int) (Math.random() * matingPool.size());
+
+                int[] parent1 = matingPool.get(chooseRandom1);
+                int[] parent2 = matingPool.get(chooseRandom2);
+
+                printArray(parent1);
+                System.out.println(computeFitness(parent1));
+                printArray(parent2);
+                System.out.println(computeFitness(parent2));
+
 
                 //crossover
                 ArrayList<int[]> crossChildren = crossover(parent1, parent2);
 
-                newPopulation.add(crossChildren.get(0));
-                newPopulation.add(crossChildren.get(1));
+                //check if children are solutions
+                if(computeFitness(crossChildren.get(0)) == bestFit){
+                    return crossChildren.get(0);
+                }
+                if(computeFitness(crossChildren.get(1)) == bestFit){
+                    return crossChildren.get(1);
+                }
 
+                int[] possibleMutatedChild1 = mutate(crossChildren.get(0), mutationChance);
+                int[] possibleMutatedChild2 = mutate(crossChildren.get(1), mutationChance);
+
+                if(computeFitness(possibleMutatedChild1) == bestFit){
+                    return crossChildren.get(0);
+                }
+                if(computeFitness(possibleMutatedChild2) == bestFit){
+                    return crossChildren.get(1);
+                }
+
+                newPopulation.add(possibleMutatedChild1);
+                newPopulation.add(possibleMutatedChild2);
             }
+
+            population = newPopulation;
+
 
         }
 
@@ -244,6 +288,18 @@ class GeneticAlgorithm{
         children.add(child2);
 
         return children;
+    }
+
+    public static int[] mutate(int[] array, double mutationProb){
+        if(mutationProb >= Math.random()){
+            array[(int)(Math.random()*array.length)] = (int)(Math.random()*array.length);
+        }
+
+        return array;
+    }
+
+    public static double scale(final double valueIn, final double baseMin, final double baseMax, final double limitMin, final double limitMax) {
+        return ((limitMax - limitMin) * (valueIn - baseMin) / (baseMax - baseMin)) + limitMin;
     }
 
 }
