@@ -28,12 +28,56 @@ public class Game {
     }
 
     public static void main(String[] args) {
-        SimulatedAnnealing s = new SimulatedAnnealing();
-        s.solve(21,100000,9900,0.5);
 
-        GeneticAlgorithm g = new GeneticAlgorithm();
-        int[] answer = g.solve(21,50,0.1,30000);
-        GeneticAlgorithm.printArray(answer);
+        int SASolved = 0;
+        int GASolved = 0;
+        long SAAvg = 0;
+        long GAAvg = 0;
+        long SATotal = 0;
+        long GATotal = 0;
+        int runs = 500;
+
+        for (int i = 0; i<runs;i++){
+            SimulatedAnnealing s = new SimulatedAnnealing();
+
+            long startTime = System.nanoTime();
+            int[] answer1 = s.solve(21,100000,9900,0.5);
+            long stopTime = System.nanoTime();
+            long elapsed = stopTime - startTime;
+            if (answer1!=null){
+                SASolved++;
+                SATotal += elapsed;
+            }
+
+
+
+
+            GeneticAlgorithm g = new GeneticAlgorithm();
+
+            long startTime2 = System.nanoTime();
+            int[] answer2 = g.solve(21,50,0.5,30000);
+            long stopTime2 = System.nanoTime();
+            long elapsed2 = stopTime2 - startTime2;
+
+            if (answer2!=null){
+                GASolved++;
+                GATotal += elapsed2;
+            }
+
+
+        }
+
+        GAAvg = GATotal/runs;
+        SAAvg = SATotal/runs;
+
+        System.out.println("Simulated Annealing: ");
+        System.out.println("Total Solved: " + SASolved);
+        System.out.println("Avg: " + SAAvg/1000000 + " ms");
+        System.out.println("Genetic Algorithm: ");
+        System.out.println("Total Solved: " + GASolved);
+        System.out.println("Avg: " + GAAvg/1000000 + " ms");
+
+
         //System.out.println(computeCost(test));
     }
 
@@ -189,11 +233,11 @@ class GeneticAlgorithm{
     public static int[] solve(int boardSize, int populationSize, double mutationChance, int numGenerations){
 
         ArrayList<int[]> population = generatePopulation(boardSize, populationSize);
-        ArrayList<int[]> sorted = getSortedPopulation(population);
+        //ArrayList<int[]> sorted = getSortedPopulation(population);
         int bestFit = (boardSize * (boardSize -1))/2;
-        if (computeFitness(sorted.get(0))== bestFit){
-            return sorted.get(0);
-        }
+        //if (computeFitness(sorted.get(0))== bestFit){
+        //    return sorted.get(0);
+        //}*/
 
         for (int i = 0; i<numGenerations;i++){
 
@@ -301,10 +345,6 @@ class GeneticAlgorithm{
         }
 
         return array;
-    }
-
-    public static double scale(final double valueIn, final double baseMin, final double baseMax, final double limitMin, final double limitMax) {
-        return ((limitMax - limitMin) * (valueIn - baseMin) / (baseMax - baseMin)) + limitMin;
     }
 
 }
