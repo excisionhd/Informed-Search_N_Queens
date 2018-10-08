@@ -31,11 +31,8 @@ public class Game {
         SimulatedAnnealing s = new SimulatedAnnealing();
         s.solve(21,100000,9900,0.5);
 
-
-        int[] test = {16,12,8,18,2,7,1,4,20,10,17,14,3,13,19,5,15,0,6,11,9};
-
         GeneticAlgorithm g = new GeneticAlgorithm();
-        int[] answer = g.solve(21,1000,0.1,10000);
+        int[] answer = g.solve(21,50,0.1,30000);
         GeneticAlgorithm.printArray(answer);
         //System.out.println(computeCost(test));
     }
@@ -212,7 +209,7 @@ class GeneticAlgorithm{
             for (int count = 0; count < population.size();count++){
                 double freq = computeFitness(population.get(count))/generationFitnessTotal;
 
-                double n = Math.floor(freq*10000);
+                double n = Math.floor(freq*100);
 
 
                 for(int j = 0; j<n;j++){
@@ -231,7 +228,7 @@ class GeneticAlgorithm{
                 int[] parent2 = matingPool.get(chooseRandom2);
 
                 //printArray(parent1);
-                System.out.println(computeFitness(parent1));
+                //System.out.println(computeFitness(parent1));
                 //printArray(parent2);
                 //System.out.println(computeFitness(parent2));
 
