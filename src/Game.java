@@ -1,5 +1,3 @@
-import com.sun.tools.javah.Gen;
-import javafx.collections.transformation.SortedList;
 
 import java.util.*;
 
@@ -232,10 +230,10 @@ class GeneticAlgorithm{
                 int[] parent1 = matingPool.get(chooseRandom1);
                 int[] parent2 = matingPool.get(chooseRandom2);
 
-                printArray(parent1);
+                //printArray(parent1);
                 System.out.println(computeFitness(parent1));
-                printArray(parent2);
-                System.out.println(computeFitness(parent2));
+                //printArray(parent2);
+                //System.out.println(computeFitness(parent2));
 
 
                 //crossover
@@ -291,8 +289,18 @@ class GeneticAlgorithm{
     }
 
     public static int[] mutate(int[] array, double mutationProb){
+
+        boolean done = false;
         if(mutationProb >= Math.random()){
-            array[(int)(Math.random()*array.length)] = (int)(Math.random()*array.length);
+            while(!done){
+                int randomNumber = (int) (Math.random()*array.length);
+
+                if(!Arrays.asList(array).contains(randomNumber)){
+                    array[(int)(Math.random()*array.length)] = randomNumber;
+                    done= true;
+                }
+            }
+
         }
 
         return array;
