@@ -2,7 +2,6 @@
 import java.util.*;
 
 public class Game {
-
     // generates random initial state
     public static int[] generateRandomState(int n) {
 
@@ -35,7 +34,8 @@ public class Game {
         long GAAvg = 0;
         long SATotal = 0;
         long GATotal = 0;
-        int runs = 500;
+        int generationSum = 0;
+        int runs = 100;
 
         for (int i = 0; i<runs;i++){
             SimulatedAnnealing s = new SimulatedAnnealing();
@@ -56,6 +56,8 @@ public class Game {
 
             long startTime2 = System.nanoTime();
             int[] answer2 = g.solve(21,50,0.5,30000);
+            //System.out.println(g.generationSum);
+            generationSum += g.generationSum;
             long stopTime2 = System.nanoTime();
             long elapsed2 = stopTime2 - startTime2;
 
@@ -69,6 +71,7 @@ public class Game {
 
         GAAvg = GATotal/runs;
         SAAvg = SATotal/runs;
+        int generationAvg = generationSum/runs;
 
         System.out.println("Simulated Annealing: ");
         System.out.println("Total Solved: " + SASolved);
@@ -76,6 +79,7 @@ public class Game {
         System.out.println("Genetic Algorithm: ");
         System.out.println("Total Solved: " + GASolved);
         System.out.println("Avg: " + GAAvg/1000000 + " ms");
+        System.out.println("Solution generally found at generation: " + generationAvg);
 
 
         //System.out.println(computeCost(test));
@@ -152,6 +156,12 @@ class SimulatedAnnealing {
 }
 
 class GeneticAlgorithm{
+
+    public static int generationSum;
+
+    public GeneticAlgorithm(){
+        generationSum = 0;
+    }
 
     public static ArrayList<int[]> generatePopulation(int boardSize, int pSize){
 
@@ -239,6 +249,8 @@ class GeneticAlgorithm{
         //    return sorted.get(0);
         //}*/
 
+
+
         for (int i = 0; i<numGenerations;i++){
 
             double generationFitnessTotal = 0;
@@ -248,7 +260,6 @@ class GeneticAlgorithm{
             for(int g = 0; g<population.size();g++){
                 generationFitnessTotal += computeFitness(population.get(g));
             }
-            //System.out.println(generationFitnessTotal);
 
             for (int count = 0; count < population.size();count++){
                 double freq = computeFitness(population.get(count))/generationFitnessTotal;
@@ -271,20 +282,17 @@ class GeneticAlgorithm{
                 int[] parent1 = matingPool.get(chooseRandom1);
                 int[] parent2 = matingPool.get(chooseRandom2);
 
-                //printArray(parent1);
-                //System.out.println(computeFitness(parent1));
-                //printArray(parent2);
-                //System.out.println(computeFitness(parent2));
-
-
                 //crossover
                 ArrayList<int[]> crossChildren = crossover(parent1, parent2);
 
                 //check if children are solutions
                 if(computeFitness(crossChildren.get(0)) == bestFit){
+                    generationSum += i;
                     return crossChildren.get(0);
+
                 }
                 if(computeFitness(crossChildren.get(1)) == bestFit){
+                    generationSum += i;
                     return crossChildren.get(1);
                 }
 
