@@ -1,85 +1,147 @@
 
 import java.util.*;
+import java.util.Scanner;
 
 public class Game {
-    // generates random initial state
+
+    // Random state generated (used in Simulated Annealing and Genetic Algorithm)
     public static int[] generateRandomState(int n) {
 
         int[] newState = new int[n];
 
+        //assign random value from 0-(n-1) to each column.
         for (int i = 0; i < newState.length; i++)
             newState[i] = (int) (Math.random() * newState.length);
 
         return newState;
     }
 
-    // Returns heuristic cost
-    public static int computeCost(int[] r) {
-        int cost = 0;
+    // Number of attacking queen pairs.  (SA only)
+    public static int computeCost(int[] arr) {
+        int totalCost = 0;
 
-        // increment cost if two queens are in same row or in same diagonal.
-        for (int i = 0; i < r.length; i++)
-            for (int j = i + 1; j < r.length; j++)
-                if (r[i] == r[j] || Math.abs(r[i] - r[j]) == j - i)
-                    cost += 1;
+        // Determine if queen is in same row or same diagonal.
+        for (int i = 0; i < arr.length; i++)
+            for (int j = i + 1; j < arr.length; j++)
+                if (arr[i] == arr[j] || Math.abs(arr[i] - arr[j]) == j - i)
+                    totalCost += 1;
 
-        return cost;
+        return totalCost;
     }
 
     public static void main(String[] args) {
 
-        int SASolved = 0;
-        int GASolved = 0;
-        long SAAvg = 0;
-        long GAAvg = 0;
-        long SATotal = 0;
-        long GATotal = 0;
-        int generationSum = 0;
-        int runs = 100;
+        try {
+            int SASolved = 0;
+            int GASolved = 0;
+            long SAAvg = 0;
+            long GAAvg = 0;
+            long SATotal = 0;
+            long GATotal = 0;
+            int generationSum = 0;
+            //int runs = 100;
+            boolean done = false;
+            //int choice = 0;
 
-        for (int i = 0; i<runs;i++){
-            SimulatedAnnealing s = new SimulatedAnnealing();
+            Scanner kb = new Scanner(System.in);
 
-            long startTime = System.nanoTime();
-            int[] answer1 = s.solve(21,100000,9900,0.5);
-            long stopTime = System.nanoTime();
-            long elapsed = stopTime - startTime;
-            if (answer1!=null){
-                SASolved++;
-                SATotal += elapsed;
-            }
+            do {
+                System.out.println("N-Queens Solver");
+                System.out.println("---------------");
+                System.out.println("1. Enter number of runs.");
+                System.out.println("2. Print a single solution.");
+                System.out.println("3. Exit.");
+                int choice = kb.nextInt();
+                switch (choice){
+                    case 1:
+                        System.out.println("Please specify how many solutions to generate: ");
+                        Scanner runs = new Scanner(System.in);
+                        int numruns = runs.nextInt();
 
+                        for (int i = 0; i < numruns; i++) {
+                            SimulatedAnnealing s = new SimulatedAnnealing();
 
-
-
-            GeneticAlgorithm g = new GeneticAlgorithm();
-
-            long startTime2 = System.nanoTime();
-            int[] answer2 = g.solve(21,50,0.5,30000);
-            //System.out.println(g.generationSum);
-            generationSum += g.generationSum;
-            long stopTime2 = System.nanoTime();
-            long elapsed2 = stopTime2 - startTime2;
-
-            if (answer2!=null){
-                GASolved++;
-                GATotal += elapsed2;
-            }
+                            long startTime = System.nanoTime();
+                            int[] answer1 = s.solve(21, 100000, 9900, 0.5);
+                            long stopTime = System.nanoTime();
+                            long elapsed = stopTime - startTime;
+                            if (answer1 != null) {
+                                SASolved++;
+                                SATotal += elapsed;
+                            }
 
 
+                            GeneticAlgorithm g = new GeneticAlgorithm();
+
+                            long startTime2 = System.nanoTime();
+                            int[] answer2 = g.solve(21, 50, 0.5, 30000);
+                            System.out.println("Genetic Algorithm:");
+                            System.out.println("------------------");
+                            g.printArray(answer2);
+                            //System.out.println(g.generationSum);
+                            generationSum += g.generationSum;
+                            long stopTime2 = System.nanoTime();
+                            long elapsed2 = stopTime2 - startTime2;
+
+                            if (answer2 != null) {
+                                GASolved++;
+                                GATotal += elapsed2;
+                            }
+                        }
+
+                        GAAvg = GATotal / numruns;
+                        SAAvg = SATotal / numruns;
+                        int generationAvg = generationSum / numruns;
+
+                        System.out.println("\nResults");
+                        System.out.println("---------");
+                        System.out.println("Simulated Annealing: ");
+                        System.out.println("Total Solved: " + SASolved);
+                        System.out.println("Avg Time Taken: " + SAAvg / 1000000 + " ms\n");
+                        System.out.println("Genetic Algorithm: ");
+                        System.out.println("Total Solved: " + GASolved);
+                        System.out.println("Avg Time Taken: " + GAAvg / 1000000 + " ms");
+                        System.out.println("Solution generally found at generation: " + generationAvg + "\n");
+                        break;
+
+                    case 2:
+                        SimulatedAnnealing s = new SimulatedAnnealing();
+
+                        long startTime = System.nanoTime();
+                        int[] answer1 = s.solve(21, 100000, 9900, 0.5);
+                        long stopTime = System.nanoTime();
+                        long elapsed = stopTime - startTime;
+
+
+                        GeneticAlgorithm g = new GeneticAlgorithm();
+                        int solvedGeneration = 0;
+                        long startTime2 = System.nanoTime();
+                        int[] answer2 = g.solve(21, 50, 0.5, 30000);
+                        System.out.println("Genetic Algorithm:");
+                        System.out.println("------------------");
+                        g.printArray(answer2);
+                        long stopTime2 = System.nanoTime();
+                        long elapsed2 = stopTime2 - startTime2;
+
+                        System.out.println("\nResults");
+                        System.out.println("---------");
+                        System.out.println("Simulated Annealing: ");
+                        System.out.println("Time Taken: " + elapsed / 1000000 + " ms\n");
+                        System.out.println("Genetic Algorithm: ");
+                        System.out.println("Time Taken: " + elapsed2 / 1000000 + " ms");
+                        System.out.println("Solution found at generation: " + g.generationSum + "\n");
+                        break;
+
+                    case 3:
+                        System.exit(0);
+                }
+
+
+            } while(!done);
         }
-
-        GAAvg = GATotal/runs;
-        SAAvg = SATotal/runs;
-        int generationAvg = generationSum/runs;
-
-        System.out.println("Simulated Annealing: ");
-        System.out.println("Total Solved: " + SASolved);
-        System.out.println("Avg: " + SAAvg/1000000 + " ms");
-        System.out.println("Genetic Algorithm: ");
-        System.out.println("Total Solved: " + GASolved);
-        System.out.println("Avg: " + GAAvg/1000000 + " ms");
-        System.out.println("Solution generally found at generation: " + generationAvg);
+        catch(InputMismatchException e){
+            System.out.println("Wrong choice, please try again.");
+        }
 
 
         //System.out.println(computeCost(test));
@@ -90,26 +152,28 @@ public class Game {
 class SimulatedAnnealing {
 
     public int[] solve(int n, int maxNumOfIterations, double temperature, double coolingFactor) {
-        int[] r = Game.generateRandomState(n);
+        int[] state = Game.generateRandomState(n);
 
-        int costToBeat = Game.computeCost(r);
+        int costToBeat = Game.computeCost(state);
 
         // terminate when it reaches max num of iterations or problem is solved.
         for (int x = 0; x < maxNumOfIterations && costToBeat > 0; x++) {
-            r = makeMove(r, costToBeat, temperature);
-            costToBeat = Game.computeCost(r);
+            state = move(state, costToBeat, temperature);
+            costToBeat = Game.computeCost(state);
             temperature = Math.max(temperature * coolingFactor, 0.01);
         }
 
         if (costToBeat == 0){
-            for (int i = 0; i<r.length;i++){
-                System.out.print(r[i] + " ");
+            System.out.println("Simulated Annealing");
+            System.out.println("-------------------");
+            for (int i = 0; i<state.length;i++){
+                System.out.print(state[i] + " ");
             }
             System.out.println();
 
-            for (int i = 0; i<r.length;i++){
-                for (int j = 0; j<r.length;j++){
-                    if (r[i] == j){
+            for (int i = 0; i<state.length;i++){
+                for (int j = 0; j<state.length;j++){
+                    if (state[i] == j){
                         System.out.print(" Q ");
                     }
                     else{
@@ -118,7 +182,7 @@ class SimulatedAnnealing {
                 }
                 System.out.println();
             }
-            return r;
+            return state;
 
         }
         else{
@@ -126,28 +190,34 @@ class SimulatedAnnealing {
         }
     }
 
-    private int[] makeMove(int r[], int costToBeat, double temp) {
-        int n = r.length;
+    //Following book pseudocode...
+    private int[] move(int board[], int lowerCost, double temperature) {
+        //get board size
+        int size = board.length;
 
+        //infinite loop until probability allows choice of worse state, or if cost of new state is better.
         while (true) {
-            int nCol = (int) (Math.random() * n);
-            int nRow = (int) (Math.random() * n);
-            int tmpRow = r[nCol];
-            r[nCol] = nRow;
+            int colNum = (int) (Math.random() * size);
+            int rowNum = (int) (Math.random() * size);
+            int tmpRow = board[colNum];
+            board[colNum] = rowNum;
 
 
-            //gradient descent, return lower cost successor, condition will skip if cost is greater
-            int cost = Game.computeCost(r);
-            if (cost < costToBeat)
-                return r;
+            //if computed smaller cost is better than the cost to beat, then return the better state.
+            int cost = Game.computeCost(board);
+            if (cost < lowerCost)
+                return board;
 
-            int dE = costToBeat - cost;
-            double acceptProb = Math.min(1, Math.exp(dE / temp));
+            //calculate delta E
+            int dE = lowerCost - cost;
+
+            //calculate probability of choosing worse state
+            double acceptProb = Math.min(1, Math.exp(dE / temperature));
 
             if (Math.random() < acceptProb)
-                return r;
+                return board;
 
-            r[nCol] = tmpRow;
+            board[colNum] = tmpRow;
         }
 
 
@@ -208,18 +278,18 @@ class GeneticAlgorithm{
 
     }
 
-    public static int computeAttackingPairs(int[] r) {
-        int h = 0;
+    public static int computeAttackingPairs(int[] array) {
+        int cost = 0;
 
-        // increment cost if two queens are in same row or in same diagonal.
-        for (int i = 0; i < r.length; i++)
-            for (int j = i + 1; j < r.length; j++)
-                if (r[i] == r[j] || Math.abs(r[i] - r[j]) == j - i)
-                    h += 1;
+        for (int i = 0; i < array.length; i++)
+            for (int j = i + 1; j < array.length; j++)
+                if (array[i] == array[j] || Math.abs(array[i] - array[j]) == j - i)
+                    cost += 1;
 
-        return h;
+        return cost;
     }
 
+    //Returns sorted population, no longer used.
     public static ArrayList<int[]> getSortedPopulation(ArrayList<int[]> population){
         PriorityQueue<int[]> sortedPop = new PriorityQueue<>(population.size(), new SortByFitness());
 
