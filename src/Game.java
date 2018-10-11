@@ -32,20 +32,21 @@ public class Game {
     public static void main(String[] args) {
 
         try {
-            int SASolved = 0;
-            int GASolved = 0;
-            long SAAvg = 0;
-            long GAAvg = 0;
-            long SATotal = 0;
-            long GATotal = 0;
-            int generationSum = 0;
-            //int runs = 100;
-            boolean done = false;
-            //int choice = 0;
 
             Scanner kb = new Scanner(System.in);
+            boolean done = false;
 
             do {
+                int SASolved = 0;
+                int GASolved = 0;
+                long SAAvg = 0;
+                long GAAvg = 0;
+                long SATotal = 0;
+                long GATotal = 0;
+                int generationSum = 0;
+                int SAmovesSum = 0;
+
+
                 System.out.println("N-Queens Solver");
                 System.out.println("---------------");
                 System.out.println("1. Enter number of runs.");
@@ -64,6 +65,7 @@ public class Game {
                             long startTime = System.nanoTime();
                             int[] answer1 = s.solve(21, 100000, 9900, 0.5);
                             long stopTime = System.nanoTime();
+                            SAmovesSum += s.numberOfMoves;
                             long elapsed = stopTime - startTime;
                             if (answer1 != null) {
                                 SASolved++;
@@ -97,7 +99,8 @@ public class Game {
                         System.out.println("---------");
                         System.out.println("Simulated Annealing: ");
                         System.out.println("Total Solved: " + SASolved);
-                        System.out.println("Avg Time Taken: " + SAAvg / 1000000 + " ms\n");
+                        System.out.println("Avg Time Taken: " + SAAvg / 1000000 + " ms");
+                        System.out.println("Avg States Generated: " + SAmovesSum/numruns + "\n");
                         System.out.println("Genetic Algorithm: ");
                         System.out.println("Total Solved: " + GASolved);
                         System.out.println("Avg Time Taken: " + GAAvg / 1000000 + " ms");
@@ -126,7 +129,8 @@ public class Game {
                         System.out.println("\nResults");
                         System.out.println("---------");
                         System.out.println("Simulated Annealing: ");
-                        System.out.println("Time Taken: " + elapsed / 1000000 + " ms\n");
+                        System.out.println("Time Taken: " + elapsed / 1000000 + " ms");
+                        System.out.println("States Generated: " + s.numberOfMoves + "\n");
                         System.out.println("Genetic Algorithm: ");
                         System.out.println("Time Taken: " + elapsed2 / 1000000 + " ms");
                         System.out.println("Solution found at generation: " + g.generationSum + "\n");
@@ -151,7 +155,10 @@ public class Game {
 
 class SimulatedAnnealing {
 
+    public static int numberOfMoves;
+
     public int[] solve(int n, int maxNumOfIterations, double temperature, double coolingFactor) {
+        numberOfMoves = 0;
         int[] state = Game.generateRandomState(n);
 
         int costToBeat = Game.computeCost(state);
@@ -161,6 +168,7 @@ class SimulatedAnnealing {
             state = move(state, costToBeat, temperature);
             costToBeat = Game.computeCost(state);
             temperature = Math.max(temperature * coolingFactor, 0.01);
+            numberOfMoves++;
         }
 
         if (costToBeat == 0){
@@ -370,9 +378,11 @@ class GeneticAlgorithm{
                 int[] possibleMutatedChild2 = mutate(crossChildren.get(1), mutationChance);
 
                 if(computeFitness(possibleMutatedChild1) == bestFit){
+                    generationSum += i;
                     return crossChildren.get(0);
                 }
                 if(computeFitness(possibleMutatedChild2) == bestFit){
+                    generationSum += i;
                     return crossChildren.get(1);
                 }
 
