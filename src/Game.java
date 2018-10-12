@@ -126,6 +126,8 @@ public class Game {
                         long stopTime2 = System.nanoTime();
                         long elapsed2 = stopTime2 - startTime2;
 
+
+                        
                         System.out.println("\nResults");
                         System.out.println("---------");
                         System.out.println("Simulated Annealing: ");
