@@ -126,8 +126,6 @@ public class Game {
                         long stopTime2 = System.nanoTime();
                         long elapsed2 = stopTime2 - startTime2;
 
-
-                        
                         System.out.println("\nResults");
                         System.out.println("---------");
                         System.out.println("Simulated Annealing: ");
@@ -162,7 +160,6 @@ class SimulatedAnnealing {
     public int[] solve(int n, int maxNumOfIterations, double temperature, double coolingFactor) {
         numberOfMoves = 0;
         int[] state = Game.generateRandomState(n);
-
         int costToBeat = Game.computeCost(state);
 
         // terminate when it reaches max num of iterations or problem is solved.
@@ -254,9 +251,7 @@ class GeneticAlgorithm{
             //System.out.print(Game.computeCost(board) + "\n");
             //printArray(board);
         }
-
         return  p;
-
     }
 
     public static void printArray(int[] array){
@@ -279,13 +274,10 @@ class GeneticAlgorithm{
     }
 
     public static int computeFitness(int[] array){
-
-
         int maxAttackingPairs = (array.length * (array.length - 1))/2;
         int numAttackingPairs = computeAttackingPairs(array);
 
         return maxAttackingPairs - numAttackingPairs;
-
     }
 
     public static int computeAttackingPairs(int[] array) {
@@ -317,7 +309,6 @@ class GeneticAlgorithm{
 
         return sortedPopulation;
 
-
     }
 
     public static int[] solve(int boardSize, int populationSize, double mutationChance, int numGenerations){
@@ -328,8 +319,6 @@ class GeneticAlgorithm{
         //if (computeFitness(sorted.get(0))== bestFit){
         //    return sorted.get(0);
         //}*/
-
-
 
         for (int i = 0; i<numGenerations;i++){
 
@@ -394,9 +383,7 @@ class GeneticAlgorithm{
 
             population = newPopulation;
 
-
         }
-
 
         return null;
     }
